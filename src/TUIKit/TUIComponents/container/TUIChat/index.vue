@@ -1,10 +1,24 @@
 <template>
-  <div class="TUIChat" :class="[env.isH5 ? 'TUIChat-H5' : '']" v-if="conversationType === 'chat'">
+  <div
+    class="TUIChat"
+    :class="[env.isH5 ? 'TUIChat-H5' : '']"
+    v-if="conversationType === 'chat'"
+  >
     <header class="TUIChat-header">
       <i class="icon icon-back" @click="back" v-if="env.isH5"></i>
-      <TypingHeader :needTyping="needTyping" :conversation="conversation" :messageList="messageList" ref="typingRef" />
+      <TypingHeader
+        :needTyping="needTyping"
+        :conversation="conversation"
+        :messageList="messageList"
+        ref="typingRef"
+      />
       <aside class="setting">
-        <Manage v-if="conversation.groupProfile" :conversation="conversation" :userInfo="userInfo" :isH5="env.isH5" />
+        <Manage
+          v-if="conversation.groupProfile"
+          :conversation="conversation"
+          :userInfo="userInfo"
+          :isH5="env.isH5"
+        />
         <Replies
           :message="currentMessage"
           :conversation="conversation"
@@ -17,18 +31,35 @@
       </aside>
     </header>
     <div class="TUIChat-main">
-      <div class="TUIChat-safe-tips">
+      <!-- <div class="TUIChat-safe-tips">
         <span>
           {{ $t('TUIChat.安全提示') }}
         </span>
         <a @click="openLink(Link.complaint)">{{ $t('TUIChat.点此投诉') }}</a>
-      </div>
-      <ul class="TUI-message-list" @click="dialogID = ''" ref="messageEle" id="messageEle">
-        <p class="message-more" @click="getHistoryMessageList" v-if="!isCompleted">
-          {{ $t('TUIChat.查看更多') }}
+      </div> -->
+      <ul
+        class="TUI-message-list"
+        @click="dialogID = ''"
+        ref="messageEle"
+        id="messageEle"
+      >
+        <p
+          class="message-more"
+          @click="getHistoryMessageList"
+          v-if="!isCompleted"
+        >
+          {{ $t("TUIChat.查看更多") }}
         </p>
-        <li v-for="(item, index) in messages" :key="index" :id="item?.ID" ref="messageAimID">
-          <MessageTimestamp :currTime="item?.time" :prevTime="index > 0 ? (messages[index-1]?.time) : 0"></MessageTimestamp>
+        <li
+          v-for="(item, index) in messages"
+          :key="index"
+          :id="item?.ID"
+          ref="messageAimID"
+        >
+          <MessageTimestamp
+            :currTime="item?.time"
+            :prevTime="index > 0 ? messages[index - 1]?.time : 0"
+          ></MessageTimestamp>
           <MessageItem
             :message="item"
             :env="env"
@@ -44,14 +75,21 @@
           >
           </MessageItem>
         </li>
-        <div class="to-bottom-tip" v-if="needToBottom" @click="scrollToTarget('bottom')">
+        <div
+          class="to-bottom-tip"
+          v-if="needToBottom"
+          @click="scrollToTarget('bottom')"
+        >
           <i class="icon icon-bottom-double"></i>
           <div class="to-bottom-tip-cont">
             <span>{{ toBottomTipCont }}</span>
           </div>
         </div>
       </ul>
-      <div class="dialog dialog-conversation" v-if="forwardStatus && messageComponents.Forward">
+      <div
+        class="dialog dialog-conversation"
+        v-if="forwardStatus && messageComponents.Forward"
+      >
         <component
           :is="'Forward'"
           :list="conversationData.list"
@@ -66,7 +104,9 @@
           </template>
           <template #right="{ data }">
             <img class="avatar" :src="conversationData.handleAvatar(data)" />
-            <label class="name" v-if="!env.isH5">{{ conversationData.handleName(data) }}</label>
+            <label class="name" v-if="!env.isH5">{{
+              conversationData.handleName(data)
+            }}</label>
           </template>
         </component>
       </div>
@@ -87,7 +127,10 @@
         @close="showImagePreview = false"
       />
     </div>
-    <div class="TUIChat-footer" :class="[isMute && 'disabled', env.isH5 && 'TUIChat-H5-footer']">
+    <div
+      class="TUIChat-footer"
+      :class="[isMute && 'disabled', env.isH5 && 'TUIChat-H5-footer']"
+    >
       <div class="func" id="func">
         <main class="func-main">
           <component
@@ -119,11 +162,11 @@
     </div>
     <div v-show="showResend" class="mask" @click="showResend = false">
       <div class="mask-main">
-        <header>{{ $t('TUIChat.确认重发该消息？') }}</header>
+        <header>{{ $t("TUIChat.确认重发该消息？") }}</header>
         <footer>
-          <p @click="showResend = false">{{ $t('TUIChat.取消') }}</p>
+          <p @click="showResend = false">{{ $t("TUIChat.取消") }}</p>
           <i></i>
-          <p @click="submit">{{ $t('TUIChat.确定') }}</p>
+          <p @click="submit">{{ $t("TUIChat.确定") }}</p>
         </footer>
       </div>
     </div>
@@ -132,7 +175,11 @@
     <header class="TUIChat-header">
       <h1>{{ conversationName }}</h1>
     </header>
-    <MessageSystem :data="messages" :types="types" @application="handleApplication" />
+    <MessageSystem
+      :data="messages"
+      :types="types"
+      @application="handleApplication"
+    />
   </div>
   <slot v-else-if="slotDefault" />
 </template>
@@ -149,10 +196,10 @@ import {
   useSlots,
   onMounted,
   watchEffect,
-} from 'vue';
-import { MessageSystem, MessageItem, MessageTimestamp } from './components';
-import { onClickOutside } from '@vueuse/core';
-import { Manage } from './manage-components';
+} from "vue";
+import { MessageSystem, MessageItem, MessageTimestamp } from "./components";
+import { onClickOutside } from "@vueuse/core";
+import { Manage } from "./manage-components";
 
 import {
   handleAvatar,
@@ -162,21 +209,21 @@ import {
   deepCopy,
   isMessageTip,
   handleReferenceForShow,
-} from './utils/utils';
+} from "./utils/utils";
 
-import { getComponents } from './index';
+import { getComponents } from "./index";
 
-import { useStore } from 'vuex';
-import constant from '../constant';
-import { handleErrorPrompts } from '../utils';
-import Link from '../../../utils/link';
-import { Message } from './interface';
-import { Conversation } from '../TUIConversation/interface';
+import { useStore } from "vuex";
+import constant from "../constant";
+import { handleErrorPrompts } from "../utils";
+import Link from "../../../utils/link";
+import { Message } from "./interface";
+import { Conversation } from "../TUIConversation/interface";
 
-import MessageInput from './message-input';
+import MessageInput from "./message-input";
 
 const TUIChat: any = defineComponent({
-  name: 'TUIChat',
+  name: "TUIChat",
   components: {
     MessageSystem,
     MessageTimestamp,
@@ -202,16 +249,17 @@ const TUIChat: any = defineComponent({
     const { TUIServer } = TUIChat;
     const GroupServer = TUIServer?.TUICore?.TUIServer?.TUIGroup;
     const ProfileServer = TUIServer?.TUICore?.TUIServer?.TUIProfile;
-    const VuexStore = (TUIServer.TUICore.isOfficial && useStore && useStore()) || {};
+    const VuexStore =
+      (TUIServer.TUICore.isOfficial && useStore && useStore()) || {};
     const { t } = (window as any).TUIKitTUICore.config.i18n.useI18n();
     const data = reactive({
       messageList: [] as Message[],
       conversation: {} as Conversation,
-      text: '',
-      atText: '',
+      text: "",
+      atText: "",
       types: TUIServer.TUICore.TIM.TYPES,
       currentMessage: {} as Message,
-      dialogID: '',
+      dialogID: "",
       forwardStatus: false,
       receiptDialogStatus: false,
       repliesDialogStatus: false,
@@ -224,32 +272,32 @@ const TUIChat: any = defineComponent({
         list: [],
       },
       selfInfo: {},
-      messageComponents: getComponents('message'),
+      messageComponents: getComponents("message"),
       isShow: false,
-      muteText: '您已被管理员禁言',
+      muteText: "您已被管理员禁言",
       isFirstSend: true,
       isFirstRender: true,
       showGroupMemberList: false,
       reference: {
         message: {} as Message,
-        content: '',
+        content: "",
         type: 0, // message type
-        show: '', // 'reference' or 'reply'
+        show: "", // 'reference' or 'reply'
       },
       historyReference: false,
-      referenceID: '',
+      referenceID: "",
       allMemberList: [],
       env: TUIServer.TUICore.TUIEnv,
       showResend: false,
       resendMessage: {},
       inputBlur: false,
       inputComposition: false,
-      inputCompositionCont: '',
+      inputCompositionCont: "",
       needTyping: props.isNeedTyping,
       needReadReceipt: false,
       peerNeedReceipt: false,
       needToBottom: false,
-      toBottomTipCont: '',
+      toBottomTipCont: "",
       messageInView: [] as Message[],
       readSet: new Set(),
       isUserAction: false,
@@ -271,24 +319,33 @@ const TUIChat: any = defineComponent({
     // Using the setMessageRead method of the TUIConversion module
     const setMessageRead = async (conversationID: string | undefined) => {
       if (!conversationID) return;
-      await TUIServer?.TUICore?.TUIServer?.TUIConversation?.setMessageRead(conversationID);
+      await TUIServer?.TUICore?.TUIServer?.TUIConversation?.setMessageRead(
+        conversationID
+      );
       return;
     };
 
     const sendMessageReadReceipt = async (messageList: Message[]) => {
       const needReceiptMessageList = messageList.filter(
-        (item: Message) => item?.flow === 'in' && item?.needReadReceipt && !data.readSet.has(item?.ID)
+        (item: Message) =>
+          item?.flow === "in" &&
+          item?.needReadReceipt &&
+          !data.readSet.has(item?.ID)
       );
       if (needReceiptMessageList.length) {
-        await TUIServer?.sendMessageReadReceipt(needReceiptMessageList).then(() => {
-          needReceiptMessageList.forEach((item: Message) => data.readSet.add(item?.ID));
-        });
+        await TUIServer?.sendMessageReadReceipt(needReceiptMessageList).then(
+          () => {
+            needReceiptMessageList.forEach((item: Message) =>
+              data.readSet.add(item?.ID)
+            );
+          }
+        );
       }
       await setMessageRead(data?.conversation?.conversationID);
     };
 
     const pluginComponentList: any = [];
-    Object.keys(getComponents('send')).forEach((name: any) => {
+    Object.keys(getComponents("send")).forEach((name: any) => {
       pluginComponentList.push(name);
     });
 
@@ -318,19 +375,20 @@ const TUIChat: any = defineComponent({
     const conversationType = computed(() => {
       const { conversation } = data;
       if (!conversation?.conversationID) {
-        return '';
+        return "";
       }
       if (conversation?.type === TUIServer.TUICore.TIM.TYPES.CONV_SYSTEM) {
-        return 'system';
+        return "system";
       }
-      return 'chat';
+      return "chat";
     });
 
     const isMute = computed(() => {
       const { conversation } = data;
       if (conversation?.type === TUIServer.TUICore.TIM.TYPES.CONV_GROUP) {
         const userRole = conversation?.groupProfile?.selfInfo.role;
-        const isMember = userRole === TUIServer.TUICore.TIM.TYPES.GRP_MBR_ROLE_MEMBER;
+        const isMember =
+          userRole === TUIServer.TUICore.TIM.TYPES.GRP_MBR_ROLE_MEMBER;
         if (isMember && conversation?.groupProfile?.muteAllMembers) {
           // data.muteText = "管理员开启全员禁言";
           return true;
@@ -359,13 +417,13 @@ const TUIChat: any = defineComponent({
         data.scroll.scrollHeight = 0;
         data.scroll.scrollTopMin = Infinity;
         data.scroll.scrollTopMax = 0;
-        data.text = '';
-        data.atText = '';
+        data.text = "";
+        data.atText = "";
         data.reference = {
           message: {} as Message,
-          content: '',
+          content: "",
           type: 0,
-          show: '',
+          show: "",
         };
       },
       {
@@ -375,15 +433,19 @@ const TUIChat: any = defineComponent({
 
     watch(isMute, (newVal: any, oldVal: any) => {
       const { conversation } = data;
-      if (newVal && conversation?.type === TUIServer.TUICore.TIM.TYPES.CONV_GROUP) {
+      if (
+        newVal &&
+        conversation?.type === TUIServer.TUICore.TIM.TYPES.CONV_GROUP
+      ) {
         const userRole = conversation?.groupProfile?.selfInfo.role;
-        const isMember = userRole === TUIServer.TUICore.TIM.TYPES.GRP_MBR_ROLE_MEMBER;
+        const isMember =
+          userRole === TUIServer.TUICore.TIM.TYPES.GRP_MBR_ROLE_MEMBER;
         if (isMember && conversation?.groupProfile?.muteAllMembers) {
-          data.muteText = '管理员开启全员禁言';
+          data.muteText = "管理员开启全员禁言";
         }
         const time: number = new Date().getTime();
         if ((data.selfInfo as any)?.muteUntil * 1000 - time > 0) {
-          data.muteText = '您已被管理员禁言';
+          data.muteText = "您已被管理员禁言";
         }
       }
     });
@@ -393,7 +455,11 @@ const TUIChat: any = defineComponent({
       return handleName(conversation);
     });
 
-    const messages = computed(() => data.messageList.filter((item: any) => !item.isDeleted && !isTypingMessage(item)));
+    const messages = computed(() =>
+      data.messageList.filter(
+        (item: any) => !item.isDeleted && !isTypingMessage(item)
+      )
+    );
     const imageList = computed(() =>
       messages?.value?.filter((item: Message) => {
         return !item.isRevoked && item.type === data.types.MSG_IMAGE;
@@ -402,7 +468,10 @@ const TUIChat: any = defineComponent({
 
     const needGroupReceipt = computed(() => {
       const { conversation, needReadReceipt } = data;
-      if (conversation?.type === TUIServer.TUICore.TIM.TYPES.CONV_C2C || needReadReceipt) {
+      if (
+        conversation?.type === TUIServer.TUICore.TIM.TYPES.CONV_C2C ||
+        needReadReceipt
+      ) {
         return true;
       }
       return false;
@@ -412,7 +481,8 @@ const TUIChat: any = defineComponent({
       messages,
       (newVal: Array<Message>, oldVal: Array<Message>) => {
         nextTick(() => {
-          const isTheSameMessage = newVal[newVal.length - 1]?.ID === oldVal[oldVal.length - 1]?.ID;
+          const isTheSameMessage =
+            newVal[newVal.length - 1]?.ID === oldVal[oldVal.length - 1]?.ID;
           if (newVal.length === 0 || isTheSameMessage) {
             return;
           }
@@ -428,8 +498,10 @@ const TUIChat: any = defineComponent({
         if (data.historyReference) {
           for (let index = 0; index < messages.value.length; index++) {
             if (messages?.value[index]?.ID === data?.referenceID) {
-              scrollToTarget('target', messageAimID.value[index]);
-              messageAimID.value[index].getElementsByClassName('content')[0].classList.add('reference-content');
+              scrollToTarget("target", messageAimID.value[index]);
+              messageAimID.value[index]
+                .getElementsByClassName("content")[0]
+                .classList.add("reference-content");
             }
           }
           data.historyReference = false;
@@ -444,8 +516,11 @@ const TUIChat: any = defineComponent({
         setTimeout(() => {
           // scrolling end
           if (newVal === messageEle?.value?.scrollTop) {
-            if (data.scroll.scrollTopMin !== Infinity && data.scroll.scrollTopMax !== 0) {
-              sendMessageReadInView('scroll');
+            if (
+              data.scroll.scrollTopMin !== Infinity &&
+              data.scroll.scrollTopMax !== 0
+            ) {
+              sendMessageReadInView("scroll");
             }
             data.scroll.scrollTopMin = Infinity;
             data.scroll.scrollTopMax = 0;
@@ -460,7 +535,7 @@ const TUIChat: any = defineComponent({
         () => messageEle?.value,
         () => {
           if (messageEle?.value) {
-            messageEle.value.addEventListener('scroll', onScrolling);
+            messageEle.value.addEventListener("scroll", onScrolling);
           }
         },
         {
@@ -477,8 +552,10 @@ const TUIChat: any = defineComponent({
       if (data.isFirstSend) {
         data.isFirstSend = false;
       }
-      data.reference.show = '';
-      TUIServer.TUICore.isOfficial && VuexStore?.commit && VuexStore?.commit('handleTask', 0);
+      data.reference.show = "";
+      TUIServer.TUICore.isOfficial &&
+        VuexStore?.commit &&
+        VuexStore?.commit("handleTask", 0);
     };
 
     const handleItem = (item: any) => {
@@ -499,7 +576,8 @@ const TUIChat: any = defineComponent({
 
     const forwardMessage = (message: Message) => {
       data.currentMessage = message;
-      conversationData.list = TUIServer.TUICore.getStore().TUIConversation.conversationList;
+      conversationData.list =
+        TUIServer.TUICore.getStore().TUIConversation.conversationList;
       data.forwardStatus = true;
     };
 
@@ -541,7 +619,7 @@ const TUIChat: any = defineComponent({
 
     const getHistoryMessageList = async () => {
       await TUIServer.getHistoryMessageList().then(() => {
-        scrollToTarget('target', messageEle?.value?.firstElementChild);
+        scrollToTarget("target", messageEle?.value?.firstElementChild);
       });
     };
 
@@ -551,11 +629,18 @@ const TUIChat: any = defineComponent({
       // If the referenced message is in the current messageList, you can jump directly. Otherwise, you need to pull the historical message
       for (let index = 0; index < messages.value.length; index++) {
         list.push(messages?.value[index]?.ID);
-        if (list.indexOf(messageID) !== -1 && messages.value[index]?.ID === messageID) {
-          scrollToTarget('target', messageAimID.value[index]);
-          messageAimID.value[index].getElementsByClassName('content')[0].classList.remove('reference-content');
+        if (
+          list.indexOf(messageID) !== -1 &&
+          messages.value[index]?.ID === messageID
+        ) {
+          scrollToTarget("target", messageAimID.value[index]);
+          messageAimID.value[index]
+            .getElementsByClassName("content")[0]
+            .classList.remove("reference-content");
           nextTick(() => {
-            messageAimID.value[index].getElementsByClassName('content')[0].classList.add('reference-content');
+            messageAimID.value[index]
+              .getElementsByClassName("content")[0]
+              .classList.add("reference-content");
           });
         }
       }
@@ -581,13 +666,13 @@ const TUIChat: any = defineComponent({
     const handleEditor = (message: Message, type: string) => {
       if (!message || !type) return;
       switch (type) {
-        case 'reference':
+        case "reference":
           referOrReplyMessage(message, type);
           break;
-        case 'reply':
+        case "reply":
           referOrReplyMessage(message, type);
           break;
-        case 'reedit':
+        case "reedit":
           if (message?.payload?.text) {
             messageInput?.value?.reEdit(message?.payload?.text);
           }
@@ -600,9 +685,10 @@ const TUIChat: any = defineComponent({
     const showDialog = async (message: Message, type: string) => {
       if (!message?.ID || !type) return;
       switch (type) {
-        case 'receipt':
+        case "receipt":
           if (
-            message.conversationType !== TUIServer.TUICore.TIM.TYPES.CONV_GROUP ||
+            message.conversationType !==
+              TUIServer.TUICore.TIM.TYPES.CONV_GROUP ||
             message.readReceiptInfo?.unreadCount === 0
           ) {
             return;
@@ -610,16 +696,17 @@ const TUIChat: any = defineComponent({
           data.currentMessage = message;
           data.receiptDialogStatus = true;
           break;
-        case 'replies':
+        case "replies":
           data.currentMessage = message;
           data.repliesDialogStatus = true;
           break;
-        case 'forward':
+        case "forward":
           data.currentMessage = message;
-          conversationData.list = TUIServer.TUICore.getStore().TUIConversation.conversationList;
+          conversationData.list =
+            TUIServer.TUICore.getStore().TUIConversation.conversationList;
           data.forwardStatus = true;
           break;
-        case 'previewImage':
+        case "previewImage":
           data.showImagePreview = !data.showImagePreview;
           data.currentImagePreview = message;
           break;
@@ -631,11 +718,11 @@ const TUIChat: any = defineComponent({
     const closeDialog = async (type: string) => {
       if (!type) return;
       switch (type) {
-        case 'receipt':
+        case "receipt":
           data.currentMessage = {};
           data.receiptDialogStatus = false;
           break;
-        case 'replies':
+        case "replies":
           data.currentMessage = {};
           data.repliesDialogStatus = false;
           break;
@@ -647,7 +734,7 @@ const TUIChat: any = defineComponent({
     const handleScroll = () => {
       if (data.isFirstRender) {
         data.needToBottom = false;
-        scrollToTarget('bottom');
+        scrollToTarget("bottom");
         data.isFirstRender = false;
         return;
       }
@@ -655,9 +742,9 @@ const TUIChat: any = defineComponent({
         const { scrollHeight, scrollTop, clientHeight } = messageEle.value;
         if (
           scrollHeight - (scrollTop + clientHeight) <= clientHeight ||
-          messages.value[messages.value.length - 1]?.flow === 'out'
+          messages.value[messages.value.length - 1]?.flow === "out"
         ) {
-          scrollToTarget('bottom');
+          scrollToTarget("bottom");
         } else {
           handleToBottomTip(true);
         }
@@ -665,7 +752,7 @@ const TUIChat: any = defineComponent({
     };
 
     const scrollToTarget = (type: string, targetElement?: HTMLElement) => {
-      messageEle?.value?.removeEventListener('scroll', onScrolling);
+      messageEle?.value?.removeEventListener("scroll", onScrolling);
       data.isUserAction = true;
       switch (type) {
         case constant.scrollType.toBottom:
@@ -676,24 +763,24 @@ const TUIChat: any = defineComponent({
             } else {
               messageEle?.value?.lastElementChild?.scrollIntoView(false);
             }
-            getImgLoad(messageEle?.value, 'message-img', async () => {
+            getImgLoad(messageEle?.value, "message-img", async () => {
               if (data?.env?.isH5) {
                 handleH5Scroll();
               } else {
                 messageEle?.value?.lastElementChild?.scrollIntoView(false);
               }
-              messageEle.value.addEventListener('scroll', onScrolling);
-              await sendMessageReadInView('page');
+              messageEle.value.addEventListener("scroll", onScrolling);
+              await sendMessageReadInView("page");
             });
           });
           break;
         case constant.scrollType.toTarget:
           nextTick(() => {
             targetElement?.scrollIntoView(false);
-            getImgLoad(messageEle?.value, 'message-img', async () => {
+            getImgLoad(messageEle?.value, "message-img", async () => {
               targetElement?.scrollIntoView(false);
-              messageEle.value.addEventListener('scroll', onScrolling);
-              await sendMessageReadInView('page');
+              messageEle.value.addEventListener("scroll", onScrolling);
+              await sendMessageReadInView("page");
             });
           });
 
@@ -704,9 +791,9 @@ const TUIChat: any = defineComponent({
     };
 
     const handleH5Scroll = () => {
-      if (document?.getElementById('app')?.style) {
-        (document.getElementById('app') as any).style.marginBottom = ``;
-        (document.getElementById('app') as any).style.height = `100%`;
+      if (document?.getElementById("app")?.style) {
+        (document.getElementById("app") as any).style.marginBottom = ``;
+        (document.getElementById("app") as any).style.height = `100%`;
       }
       messageEle.value.scrollTop = messageEle.value.scrollHeight;
     };
@@ -735,10 +822,15 @@ const TUIChat: any = defineComponent({
       switch (needToBottom) {
         case true:
           data.needToBottom = true;
-          if (data?.conversation?.unreadCount && data?.conversation?.unreadCount > 0) {
-            data.toBottomTipCont = `${data?.conversation?.unreadCount} ${t('TUIChat.条新消息')}`;
+          if (
+            data?.conversation?.unreadCount &&
+            data?.conversation?.unreadCount > 0
+          ) {
+            data.toBottomTipCont = `${data?.conversation?.unreadCount} ${t(
+              "TUIChat.条新消息"
+            )}`;
           } else {
-            data.toBottomTipCont = t('TUIChat.回到最新位置');
+            data.toBottomTipCont = t("TUIChat.回到最新位置");
           }
           break;
         case false:
@@ -779,14 +871,22 @@ const TUIChat: any = defineComponent({
       await sendMessageReadReceipt(data.messageInView);
     };
 
-    const isInView = (type: string, dom: HTMLElement, viewStart: number, viewEnd: number) => {
+    const isInView = (
+      type: string,
+      dom: HTMLElement,
+      viewStart: number,
+      viewEnd: number
+    ) => {
       const containerTop = messageEle.value.getBoundingClientRect().top;
       const containerBottom = messageEle.value.getBoundingClientRect().bottom;
       const { top, bottom } = dom.getBoundingClientRect();
       const { offsetTop, clientHeight } = dom;
       switch (type) {
         case constant.inViewType.page:
-          return Math.round(top) >= Math.round(containerTop) && Math.round(bottom) <= Math.round(containerBottom);
+          return (
+            Math.round(top) >= Math.round(containerTop) &&
+            Math.round(bottom) <= Math.round(containerBottom)
+          );
         case constant.inViewType.scroll:
           return (
             Math.round(offsetTop) >= Math.round(viewStart) &&
@@ -799,13 +899,15 @@ const TUIChat: any = defineComponent({
 
     const handleDropDownOpen = (value: any) => {
       if (data.dropDownRef) {
-        (data.dropDownRef as any).removeChild((data.dropDownRef as any).children[0]);
+        (data.dropDownRef as any).removeChild(
+          (data.dropDownRef as any).children[0]
+        );
       }
       data.dropDownRef = value;
     };
 
     const handleUploadingImageOrVideo = () => {
-      scrollToTarget('bottom');
+      scrollToTarget("bottom");
     };
 
     const handleImagePreview = (message: any) => {
@@ -816,9 +918,9 @@ const TUIChat: any = defineComponent({
     const resetReplyOrReference = () => {
       data.reference = {
         message: {} as Message,
-        content: '',
+        content: "",
         type: 0,
-        show: '',
+        show: "",
       };
     };
 

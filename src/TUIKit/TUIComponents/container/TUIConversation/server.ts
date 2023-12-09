@@ -1,4 +1,4 @@
-import IComponentServer from '../IComponentServer';
+import IComponentServer from "../IComponentServer";
 
 /**
  * class TUIConversationServer
@@ -14,7 +14,11 @@ export default class TUIConversationServer extends IComponentServer {
     super();
     this.TUICore = TUICore;
     this.bindTIMEvent();
-    this.store = TUICore.setComponentStore('TUIConversation', {}, this.updateStore.bind(this));
+    this.store = TUICore.setComponentStore(
+      "TUIConversation",
+      {},
+      this.updateStore.bind(this)
+    );
   }
 
   /**
@@ -50,7 +54,7 @@ export default class TUIConversationServer extends IComponentServer {
   private handlePromiseCallback(callback: any) {
     return new Promise<void>((resolve, reject) => {
       const config = {
-        TUIName: 'TUIConversation',
+        TUIName: "TUIConversation",
         callback: () => {
           callback && callback(resolve, reject);
         },
@@ -68,13 +72,27 @@ export default class TUIConversationServer extends IComponentServer {
    */
 
   private bindTIMEvent() {
-    this.TUICore.tim.on(this.TUICore.TIM.EVENT.CONVERSATION_LIST_UPDATED, this.handleConversationListUpdate, this);
-    this.TUICore.tim.on(this.TUICore.TIM.EVENT.NET_STATE_CHANGE, this.handleNetStateChange, this);
+    this.TUICore.tim.on(
+      this.TUICore.TIM.EVENT.CONVERSATION_LIST_UPDATED,
+      this.handleConversationListUpdate,
+      this
+    );
+    this.TUICore.tim.on(
+      this.TUICore.TIM.EVENT.NET_STATE_CHANGE,
+      this.handleNetStateChange,
+      this
+    );
   }
 
   private unbindTIMEvent() {
-    this.TUICore.tim.off(this.TUICore.TIM.EVENT.CONVERSATION_LIST_UPDATED, this.handleConversationListUpdate);
-    this.TUICore.tim.off(this.TUICore.TIM.EVENT.NET_STATE_CHANGE, this.handleNetStateChange);
+    this.TUICore.tim.off(
+      this.TUICore.TIM.EVENT.CONVERSATION_LIST_UPDATED,
+      this.handleConversationListUpdate
+    );
+    this.TUICore.tim.off(
+      this.TUICore.TIM.EVENT.NET_STATE_CHANGE,
+      this.handleNetStateChange
+    );
   }
 
   private handleConversationListUpdate(res: any) {
@@ -82,7 +100,7 @@ export default class TUIConversationServer extends IComponentServer {
   }
 
   private handleNetStateChange(res: any) {
-    this.currentStore.netWork = res?.data?.state || '';
+    this.currentStore.netWork = res?.data?.state || "";
   }
 
   /**
@@ -96,11 +114,16 @@ export default class TUIConversationServer extends IComponentServer {
       allConversationList: list,
       conversationList: [],
     };
-    const currentList = list.filter((item: any) => item?.conversationID === this?.currentStore?.currentConversationID);
+    const currentList = list.filter(
+      (item: any) =>
+        item?.conversationID === this?.currentStore?.currentConversationID
+    );
     if (currentList.length === 0) {
       this.handleCurrentConversation({});
     }
-    options.conversationList = list.filter((item: any) => item.type !== this.TUICore.TIM.TYPES.CONV_SYSTEM);
+    options.conversationList = list.filter(
+      (item: any) => item.type !== this.TUICore.TIM.TYPES.CONV_SYSTEM
+    );
     this.store.allConversationList = options.allConversationList;
     this.store.conversationList = options.conversationList;
     return options;
@@ -124,7 +147,9 @@ export default class TUIConversationServer extends IComponentServer {
   public async setMessageRead(conversationID: string) {
     return this.handlePromiseCallback(async (resolve: any, reject: any) => {
       try {
-        const imResponse: any = await this.TUICore.tim.setMessageRead({ conversationID });
+        const imResponse: any = await this.TUICore.tim.setMessageRead({
+          conversationID,
+        });
         resolve(imResponse);
       } catch (error) {
         reject(error);
@@ -141,7 +166,9 @@ export default class TUIConversationServer extends IComponentServer {
   public async deleteConversation(conversationID: string) {
     return this.handlePromiseCallback(async (resolve: any, reject: any) => {
       try {
-        const imResponse: any = await this.TUICore.tim.deleteConversation(conversationID);
+        const imResponse: any = await this.TUICore.tim.deleteConversation(
+          conversationID
+        );
         resolve(imResponse);
       } catch (error) {
         reject(error);
@@ -175,7 +202,9 @@ export default class TUIConversationServer extends IComponentServer {
   public async muteConversation(options: any) {
     return this.handlePromiseCallback(async (resolve: any, reject: any) => {
       try {
-        const imResponse: any = await this.TUICore.tim.setMessageRemindType(options);
+        const imResponse: any = await this.TUICore.tim.setMessageRemindType(
+          options
+        );
         resolve(imResponse);
       } catch (error) {
         reject(error);
@@ -191,7 +220,9 @@ export default class TUIConversationServer extends IComponentServer {
   public async getConversationProfile(conversationID: string) {
     return this.handlePromiseCallback(async (resolve: any, reject: any) => {
       try {
-        const imResponse = await this.TUICore.tim.getConversationProfile(conversationID);
+        const imResponse = await this.TUICore.tim.getConversationProfile(
+          conversationID
+        );
         resolve(imResponse);
       } catch (error) {
         reject(error);
@@ -225,7 +256,9 @@ export default class TUIConversationServer extends IComponentServer {
   public async getUserProfile(userIDList: Array<string>) {
     return this.handlePromiseCallback(async (resolve: any, reject: any) => {
       try {
-        const imResponse = await this.TUICore.tim.getUserProfile({ userIDList });
+        const imResponse = await this.TUICore.tim.getUserProfile({
+          userIDList,
+        });
         resolve(imResponse);
       } catch (error) {
         reject(error);
@@ -259,12 +292,12 @@ export default class TUIConversationServer extends IComponentServer {
     this.TUICore.getStore().TUIChat.conversation = value || {};
 
     if (!value?.conversationID) {
-      this.currentStore.currentConversationID = '';
+      this.currentStore.currentConversationID = "";
       return;
     }
     // Prevent group chat that is currently open from entering from the address book, resulting in no jump.
     if (this.currentStore.currentConversationID === value?.conversationID) {
-      this.currentStore.currentConversationID = '';
+      this.currentStore.currentConversationID = "";
     }
     if (this.currentStore.currentConversationID) {
       this.setMessageRead(this.currentStore.currentConversationID);

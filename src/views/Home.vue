@@ -3,10 +3,7 @@
     :class="['home' + (env.isH5 ? '-h5' : '')]"
     :id="env.isH5 ? '' : 'preloadedImages'"
   >
-    <main
-      class="home-main"
-      v-if="!env.isH5"
-    >
+    <main class="home-main" v-if="!env.isH5">
       <div class="home-main-box">
         <div class="home-TUIKit">
           <div class="setting">
@@ -124,6 +121,7 @@
               <TUIConversation
                 @current="handleCurrentConversation"
                 :displayOnlineStatus="displayOnlineStatus"
+                :ToConversationID="toUserId"
               />
             </div>
             <div class="chat">
@@ -177,7 +175,6 @@
     <main class="home-h5-main" v-if="env.isH5">
       <div class="message" v-show="!currentConversationID">
         <main class="home-h5-content" v-show="currentModel === 'message'">
-  
           <div class="home-h5-main-content">
             <TUIConversation
               @current="handleCurrentConversation"
@@ -315,26 +312,27 @@ import {
   getCurrentInstance,
   reactive,
   toRefs,
-  ref,onBeforeMount,
+  ref,
+  onBeforeMount,
+  onMounted,
 } from "vue";
-import locales from '../locales';
-import { TUICallKit } from '@tencentcloud/call-uikit-vue';
-import { TUICore,  TUIComponents } from "../TUIKit";
+import locales from "../locales";
+import { TUICallKit } from "@tencentcloud/call-uikit-vue";
+import { TUICore, TUIComponents } from "../TUIKit";
 import { TUINotification } from "@/TUIKit/TUIPlugin";
 
 import { useI18nLocale } from "../TUIKit/TUIPlugin/TUIi18n";
 import Header from "../components/Header.vue";
 import Menu from "../components/Menu.vue";
 import { useStore } from "vuex";
-import router from "@/router";
 import { cancellation } from "../api";
 import { switchTitle } from "../utils/switchTitle";
 import Link from "../assets/link";
 import { handleErrorPrompts } from "@/TUIKit/TUIComponents/container/utils";
 import Drag from "@/TUIKit/TUIComponents/components/drag";
-import { genTestUserSig, EXPIRETIME } from '../TUIKit/debug/index';
-import { ElMessage } from 'element-plus';
-import { useRoute } from 'vue-router';
+import { genTestUserSig, EXPIRETIME } from "../TUIKit/debug/index";
+import { ElMessage } from "element-plus";
+import { useRoute } from "vue-router";
 export default defineComponent({
   components: {
     Header,
@@ -343,20 +341,20 @@ export default defineComponent({
   },
   setup(props, context) {
     const route = useRoute();
-    const SDKAppID = Number(route.query.SDKAppID)
-    const { secretKey, userId, toUserId} = route.query
+    const SDKAppID = Number(route.query.SDKAppID);
+    const { secretKey, userId, toUserId } = route.query;
     const instance = getCurrentInstance();
-    const app = instance?.appContext.app
-    const TUIKit: any  = TUICore.init({
+    const app = instance?.appContext.app;
+    const TUIKit: any = TUICore.init({
       SDKAppID,
     });
     TUIKit.config.i18n.provideMessage(locales);
     TUIKit.use(TUIComponents);
     TUIKit.use(TUICallKit);
     TUIKit.use(TUINotification);
-    console.log( route.query,' route.query')
-    app?.use(TUIKit)
-    
+    console.log(route.query, " route.query");
+    app?.use(TUIKit);
+
     // const TUIKit: any = instance?.appContext.config.globalProperties.$TUIKit;
     const store = useStore && useStore();
     const taskList = computed(() => store.state.taskList);
@@ -453,28 +451,28 @@ export default defineComponent({
       ],
     });
     onBeforeMount(async () => {
-      console.log('onBeforeMount')
+      console.log("onBeforeMount");
       if (TUIKit.isSDKReady) {
         await TUIKit.logout();
       }
       const options = genTestUserSig({ SDKAppID, secretKey, userID: userId });
       const userInfo = {
-            userID: userId,
-            userSig: options.userSig,
-          };
+        userID: userId,
+        userSig: options.userSig,
+      };
       TUIKit.login(userInfo)
         .then((res: any) => {
           const options = {
             ...userInfo,
             expire: new Date().getTime() + EXPIRETIME * 1000,
           };
-          store.commit('setUserInfo', options);
+          store.commit("setUserInfo", options);
         })
         .catch((error: any) => {
           ElMessage({
             message: error,
             grouping: true,
-            type: 'error',
+            type: "error",
           });
         });
     });
@@ -541,7 +539,7 @@ export default defineComponent({
     };
 
     const exitLogin = async () => {
-      router.push({ name: "Login" });
+      // router.push({ name: "Login" });
       localStorage.removeItem("TUIKit-userInfo");
       data.ruleForm.userInfo.userId = "";
       data.ruleForm.userInfo.userSig = "";
@@ -599,6 +597,7 @@ export default defineComponent({
     const handleCurrentConversation = (value: string) => {
       data.currentModel = "message";
       data.currentConversationID = value;
+      console.log("home下的curr", value);
     };
 
     const setReadReceipt = (value: boolean) => {
@@ -642,11 +641,15 @@ export default defineComponent({
       TUIServer?.TUIChat?.handleMessageSentByMeToView(message);
       return;
     };
-    const getProfile = ()=>{
-
-    }
+    const getProfile = () => {};
+    onBeforeMount(() => {
+      data.currentModel = "message";
+      data.currentConversationID = "C2C" + userId;
+      console.log("onMounted", data);
+    });
     return {
       ...toRefs(data),
+      toUserId,
       dragRef,
       taskList,
       change,

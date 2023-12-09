@@ -2,7 +2,7 @@
   <div class="TUI-conversation">
     <div class="network" v-if="isNetwork">
       <i class="icon icon-error">!</i>
-      <p>️{{ $t('TUIConversation.网络异常，请您检查网络设置') }}</p>
+      <p>️{{ $t("TUIConversation.网络异常，请您检查网络设置") }}</p>
     </div>
     <main class="TUI-conversation-list">
       <TUIConversationList
@@ -17,13 +17,18 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, computed, watch } from 'vue';
-import TUIConversationList from './components/list';
-import { caculateTimeago, isArrayEqual } from '../utils';
-import { handleAvatar, handleName, handleShowLastMessage, handleAt } from '../TUIChat/utils/utils';
+import { defineComponent, reactive, toRefs, computed, watch } from "vue";
+import TUIConversationList from "./components/list";
+import { caculateTimeago, isArrayEqual } from "../utils";
+import {
+  handleAvatar,
+  handleName,
+  handleShowLastMessage,
+  handleAt,
+} from "../TUIChat/utils/utils";
 
 const TUIConversation = defineComponent({
-  name: 'TUIConversation',
+  name: "TUIConversation",
 
   components: {
     TUIConversationList,
@@ -33,12 +38,15 @@ const TUIConversation = defineComponent({
       type: Boolean,
       default: false,
     },
+    ToConversationID: {
+      type: Number,
+      default: 0,
+    },
   },
   setup(props: any, ctx: any) {
-    console.log('displayOnlineStatus',props.displayOnlineStatus)
     const TUIServer: any = TUIConversation?.TUIServer;
     const data = reactive({
-      currentConversationID: '',
+      currentConversationID: "",
       conversationData: {
         list: [],
         handleItemAvator: (item: any) => handleAvatar(item),
@@ -49,36 +57,54 @@ const TUIConversation = defineComponent({
           if (time > 0) {
             return caculateTimeago(time * 1000);
           }
-          return '';
+          return "";
         },
       },
       userIDList: [],
-      netWork: '',
+      netWork: "",
       env: TUIServer.TUICore.TUIEnv,
       displayOnlineStatus: false,
       userStatusList: new Map(),
     });
 
     TUIServer.bind(data);
-
+    console.log("aefasdfa", data);
     TUIConversationList.TUIServer = TUIServer;
 
     watch(
       () => data.currentConversationID,
       (newVal: any) => {
-        ctx.emit('current', newVal);
+        ctx.emit("current", newVal);
       },
       {
         deep: true,
       }
     );
-
+    watch(
+      () => data.conversationData.list,
+      (newVal: Array<any>) => {
+        if (newVal.length > 0) {
+          newVal.forEach((item: any) => {
+            if (item.userProfile.userID == props.ToConversationID) {
+              ctx.emit("current", item.conversationID);
+              handleCurrentConversation(item);
+            }
+          });
+        }
+      },
+      {
+        deep: true,
+      }
+    );
     watch(
       () => props.displayOnlineStatus,
       async (newVal: any, oldVal: any) => {
         if (newVal === oldVal) return;
         data.displayOnlineStatus = newVal;
-        TUIServer.TUICore.TUIServer.TUIContact.handleUserStatus(data.displayOnlineStatus, [...data.userIDList]);
+        TUIServer.TUICore.TUIServer.TUIContact.handleUserStatus(
+          data.displayOnlineStatus,
+          [...data.userIDList]
+        );
       },
       { immediate: true }
     );
@@ -87,7 +113,10 @@ const TUIConversation = defineComponent({
       () => [...data.userIDList],
       async (newVal: any, oldVal: any) => {
         if (isArrayEqual(newVal, oldVal)) return;
-        TUIServer.TUICore.TUIServer.TUIContact.handleUserStatus(data.displayOnlineStatus, [...data.userIDList]);
+        TUIServer.TUICore.TUIServer.TUIContact.handleUserStatus(
+          data.displayOnlineStatus,
+          [...data.userIDList]
+        );
       },
       {
         deep: true,
@@ -95,8 +124,10 @@ const TUIConversation = defineComponent({
     );
 
     const isNetwork = computed(() => {
-      const disconnected = data.netWork === TUIServer.TUICore.TIM.TYPES.NET_STATE_DISCONNECTED;
-      const connecting = data.netWork === TUIServer.TUICore.TIM.TYPES.NET_STATE_CONNECTING;
+      const disconnected =
+        data.netWork === TUIServer.TUICore.TIM.TYPES.NET_STATE_DISCONNECTED;
+      const connecting =
+        data.netWork === TUIServer.TUICore.TIM.TYPES.NET_STATE_CONNECTING;
       return disconnected || connecting;
     });
 

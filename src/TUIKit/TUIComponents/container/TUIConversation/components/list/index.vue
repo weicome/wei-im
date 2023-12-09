@@ -31,8 +31,15 @@
   </ul>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, toRefs, watch, watchEffect } from 'vue';
-import LiteItem from '../list-item';
+import {
+  defineComponent,
+  reactive,
+  ref,
+  toRefs,
+  watch,
+  watchEffect,
+} from "vue";
+import LiteItem from "../list-item";
 const TUIConversationList: any = defineComponent({
   props: {
     data: {
@@ -41,7 +48,7 @@ const TUIConversationList: any = defineComponent({
     },
     currentID: {
       type: String,
-      default: () => '',
+      default: () => "",
     },
     isH5: {
       type: Boolean,
@@ -61,8 +68,8 @@ const TUIConversationList: any = defineComponent({
     const TUIServer: any = TUIConversationList?.TUIServer;
     const obj = reactive({
       data: {},
-      currentID: '',
-      toggleID: '',
+      currentID: "",
+      toggleID: "",
       displayOnlineStatus: false,
       userStatusList: new Map(),
       types: TUIServer.TUICore.TIM.TYPES,
@@ -85,44 +92,46 @@ const TUIConversationList: any = defineComponent({
     );
 
     const handleListItem = (item: any) => {
-      ctx.emit('handleItem', item);
+      ctx.emit("handleItem", item);
     };
 
     const handleItem = (params: any) => {
       const { name, conversation } = params;
       switch (name) {
-        case 'delete':
+        case "delete":
           handleDeleteConversation(conversation);
           break;
-        case 'ispinned':
+        case "ispinned":
           handlePinConversation(name, conversation);
           break;
-        case 'dispinned':
+        case "dispinned":
           handlePinConversation(name, conversation);
           break;
-        case 'mute':
+        case "mute":
           handleMuteConversation(name, conversation);
           break;
-        case 'notMute':
+        case "notMute":
           handleMuteConversation(name, conversation);
           break;
       }
     };
 
     const handleDeleteConversation = (conversation: any) => {
-      TUIServer.deleteConversation(conversation.conversationID).then((imResponse: any) => {
-        const { conversationID } = imResponse.data;
-        const { conversation } = TUIServer.TUICore.getStore().TUIChat;
-        // 删除会话，判断当前删除的会话是否为打开的会话
-        // 若为打开的会话，通知 TUIChat 关闭当前会话
-        // Delete session: judge whether the currently deleted session is an open session
-        // If it is an open session, notify tuichat to close the current session
-        if (conversation.conversationID === conversationID) {
-          TUIServer.TUICore.getStore().TUIChat.conversation = {
-            conversationID: '',
-          };
+      TUIServer.deleteConversation(conversation.conversationID).then(
+        (imResponse: any) => {
+          const { conversationID } = imResponse.data;
+          const { conversation } = TUIServer.TUICore.getStore().TUIChat;
+          // 删除会话，判断当前删除的会话是否为打开的会话
+          // 若为打开的会话，通知 TUIChat 关闭当前会话
+          // Delete session: judge whether the currently deleted session is an open session
+          // If it is an open session, notify tuichat to close the current session
+          if (conversation.conversationID === conversationID) {
+            TUIServer.TUICore.getStore().TUIChat.conversation = {
+              conversationID: "",
+            };
+          }
         }
-      });
+      );
     };
 
     const handlePinConversation = (type: string, conversation: any) => {
@@ -131,10 +140,10 @@ const TUIConversationList: any = defineComponent({
         isPinned: true,
       };
 
-      if (type === 'dispinned') {
+      if (type === "dispinned") {
         options.isPinned = false;
       }
-      console.log('dispinned', options);
+      console.log("dispinned", options);
       TUIServer.pinConversation(options);
     };
 
@@ -149,8 +158,9 @@ const TUIConversationList: any = defineComponent({
         options.groupID = conversation.groupProfile.groupID;
       }
 
-      if (type === 'notMute') {
-        options.messageRemindType = TUIServer.TUICore.TIM.TYPES.MSG_REMIND_ACPT_AND_NOTE;
+      if (type === "notMute") {
+        options.messageRemindType =
+          TUIServer.TUICore.TIM.TYPES.MSG_REMIND_ACPT_AND_NOTE;
       }
 
       TUIServer.muteConversation(options);
@@ -161,7 +171,7 @@ const TUIConversationList: any = defineComponent({
     };
 
     const scrollChange = () => {
-      obj.toggleID && (obj.toggleID = '');
+      obj.toggleID && (obj.toggleID = "");
     };
 
     return {
