@@ -49,6 +49,26 @@ const constant: any = {
     REJECT_INVITE: 4,
     INVITE_TIMEOUT: 5,
   },
+  OTHER_TYPE:[
+    "text_insert",
+    "limit_user_oneday",
+    "three_limit",
+    "not_enough_intimacy_video",
+    "not_enough_intimacy_audio",
+    "not_enough_intimacy_video_three_minute",
+    "not_enough_vip_video_three_minute",
+    "not_enough_intimacy_video_one_minute",
+    "not_enough_vip_video_one_minute",
+    "not_enough_vip_video_one_minute",
+    "not_enough_intimacy_audio_three_minute",
+    "not_enough_vip_audio_three_minute",
+    "not_enough_intimacy_audio_one_minute",
+    "not_enough_vip_audio_one_minute",
+    "close_talk_not_enough_intimacy_video",
+    "close_talk_vip_free_video",
+    "close_talk_not_enough_intimacy_audio",
+    "close_talk_vip_free_audio"
+  ]
 };
 
 export default constant;
