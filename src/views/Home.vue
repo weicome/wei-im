@@ -279,7 +279,7 @@
         :isNeedEmojiReact="true"
       />
     </main>
-    <!-- <Drag
+    <Drag
       :show="showCall || showCallMini"
       :class="[
         showCallMini && 'callkit-drag-container-mini',
@@ -301,7 +301,7 @@
         :onMinimized="onMinimized"
         :onMessageSentByMe="onMessageSentByMe"
       />
-    </Drag> -->
+    </Drag>
   </div>
 </template>
 

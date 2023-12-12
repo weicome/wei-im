@@ -136,7 +136,7 @@ export default defineComponent({
     const isCustomInCustomTypes = computed(() => {
       return constant.OTHER_TYPE.includes(data.isCustom?.businessID);
     });
-    console.log('data',data)
+  
     return {
       ...toRefs(data),
       isUrl,

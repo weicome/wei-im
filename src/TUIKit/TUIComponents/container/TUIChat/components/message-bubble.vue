@@ -1,7 +1,7 @@
 <template>
   <div class="message-bubble" :class="[message.flow === 'in' ? '' : 'reverse']" ref="htmlRefHook">
     <img
-      class="avatar"
+      class="avatar" v-if="isShowAvatar"
       :src="message?.avatar || 'https://web.sdk.qcloud.com/component/TUIKit/assets/avatar_21.png'"
       onerror="this.src='https://web.sdk.qcloud.com/component/TUIKit/assets/avatar_21.png'"
     />
@@ -75,7 +75,7 @@
 <script lang="ts">
 import { decodeText } from '../utils/decodeText';
 import constant from '../../constant';
-import { defineComponent, watchEffect, reactive, toRefs, ref, nextTick, watch } from 'vue';
+import { defineComponent, watchEffect, reactive, toRefs, ref, nextTick, watch,computed } from 'vue';
 import { onClickOutside, onLongPress, useElementBounding } from '@vueuse/core';
 import { deepCopy, JSONToObject } from '../utils/utils';
 import { handleErrorPrompts } from '../../utils';
@@ -116,6 +116,10 @@ const messageBubble = defineComponent({
       type: Boolean,
       default: false,
     },
+    types: {
+      type:Object,
+      default: () => ({}),
+    }
   },
   emits: ['jumpID', 'resendMessage', 'showReadReceiptDialog', 'showRepliesDialog', 'dropDownOpen'],
   components: {
@@ -372,7 +376,10 @@ const messageBubble = defineComponent({
         return false;
       }
     };
-
+    const isShowAvatar = computed(()=>{
+      const { data, types } = props
+      return data?.type !== types?.MSG_CUSTOM
+    })
     return {
       ...toRefs(data),
       toggleDialog,
@@ -389,6 +396,7 @@ const messageBubble = defineComponent({
       handleImageOrVideoBubbleStyle,
       isEmojiReactionInMessage,
       TIM,
+      isShowAvatar,
     };
   },
 });
