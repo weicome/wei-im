@@ -597,7 +597,6 @@ export default defineComponent({
     const handleCurrentConversation = (value: string) => {
       data.currentModel = "message";
       data.currentConversationID = value;
-      console.log("home下的curr", value);
     };
 
     const setReadReceipt = (value: boolean) => {
