@@ -119,8 +119,8 @@ export default class TUIChatServer extends IComponentServer {
         this.currentStore.messageList = [...this.currentStore.messageList, message];
       }
       TUINotification.getInstance().notify(message);
-      (window.parent as any).changeTitle(this.currentStore.conversation.userProfile.userID)
-      console.log('调用Windows.parent.changeTitle',this.currentStore.conversation.userProfile.userID)
+      (window.parent as any).changeTitle(this.TUICore.store.store.TUIProfile.profile.userID)
+      console.log('调用Windows.parent.changeTitle',this.TUICore.store.store.TUIProfile.profile.userID)
     });
   }
 
