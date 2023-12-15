@@ -50,6 +50,9 @@
         <span>{{ data.custom }}</span>
       </div>
     </template>
+    <template v-else-if="isCustomInCustomTypes">
+      <span v-html="isCustom.body"></span>
+    </template>
     <template v-else>
       <span v-html="data.custom"></span>
     </template>
@@ -57,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect, reactive, toRefs } from 'vue';
+import { defineComponent, watchEffect, reactive, toRefs, computed  } from 'vue';
 import { isUrl, JSONToObject } from '../utils/utils';
 import constant from '../../constant';
 import { useStore } from 'vuex';
@@ -74,7 +77,7 @@ export default defineComponent({
     const data = reactive({
       data: {} as any,
       extension: {},
-      isCustom: '',
+      isCustom: {businessID:'',body:''},
       constant: constant,
     });
     watchEffect(() => {
@@ -130,13 +133,17 @@ export default defineComponent({
           break;
       }
     };
-
+    const isCustomInCustomTypes = computed(() => {
+      return constant.OTHER_TYPE.includes(data.isCustom?.businessID);
+    });
+  
     return {
       ...toRefs(data),
       isUrl,
       openLink,
       handleCallMessageIcon,
       handleCallAgain,
+      isCustomInCustomTypes,
     };
   },
 });

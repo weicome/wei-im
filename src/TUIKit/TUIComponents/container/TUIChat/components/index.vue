@@ -1,6 +1,6 @@
 <template>
   <div class="message-item">
-    <MessageTip v-if="isMessageTip(message)" :data="handleTipMessageShowContext(message)" />
+    <MessageTip  v-if="isMessageTip(message)" :data="handleTipMessageShowContext(message)" />
     <MessageBubble
       v-else-if="!message.isRevoked"
       :data="message"
@@ -9,14 +9,15 @@
       :needGroupReceipt="displayGroupMessageReadReceipt"
       :needReplies="true"
       :needEmojiReact="displayEmojiReactions"
+      :types="types"
       @jumpID="jumpID"
       @resendMessage="resendMessage"
       @showReadReceiptDialog="showReadReceiptDialog"
       @showRepliesDialog="showRepliesDialog"
     >
       <MessageText v-if="message.type === types.MSG_TEXT" :data="handleTextMessageShowContext(message)" />
-      <MessageImage
-        v-if="message.type === types.MSG_IMAGE"
+      <MessageImage class="itemavatr"
+        v-if="message.type === types.MSG_IMAGE && message.type !== types.MSG_CUSTOM "
         :isH5="env.isH5"
         :data="handleImageMessageShowContext(message)"
         @uploading="uploading"
@@ -167,6 +168,7 @@ const resendMessage = (message: Message) => {
     emits('resendMessage', message);
   }
 }
+
 </script>
 <style lang="scss" scoped>
 @import url('../../../styles/common.scss');

@@ -279,7 +279,7 @@
         :isNeedEmojiReact="true"
       />
     </main>
-    <!-- <Drag
+    <Drag
       :show="showCall || showCallMini"
       :class="[
         showCallMini && 'callkit-drag-container-mini',
@@ -301,7 +301,7 @@
         :onMinimized="onMinimized"
         :onMessageSentByMe="onMessageSentByMe"
       />
-    </Drag> -->
+    </Drag>
   </div>
 </template>
 
@@ -622,7 +622,6 @@ export default defineComponent({
     const handleCurrentConversation = (value: string) => {
       data.currentModel = "message";
       data.currentConversationID = value;
-      console.log("home下的curr", value);
     };
 
     const setReadReceipt = (value: boolean) => {
