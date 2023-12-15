@@ -68,7 +68,6 @@ const TUIConversation = defineComponent({
     });
 
     TUIServer.bind(data);
-    console.log("aefasdfa", data);
     TUIConversationList.TUIServer = TUIServer;
 
     watch(
