@@ -467,6 +467,31 @@ export default defineComponent({
             expire: new Date().getTime() + EXPIRETIME * 1000,
           };
           store.commit("setUserInfo", options);
+          console.log("TUICore.instance", TUICore.instance);
+          const name = `C2C${toUserId}`;
+          TUICore.instance.TUIServer.TUIConversation.getConversationProfile(
+            name
+          ).then((imResponse: any) => {
+            // 通知 TUIConversation 添加当前会话
+            // Notify TUIConversation to toggle the current conversation
+            TUICore.instance.TUIServer.TUIConversation.handleCurrentConversation(
+              imResponse.data.conversation
+            );
+            // back();
+          });
+          // const promise = TUICore.instance.TUIServer.TUIProfile.getUserProfile(
+          //   [toUserId] // 请注意：即使只拉取一个用户的资料，也需要用数组类型，例如：userIDList: ['user1']
+          // );
+          // promise
+          //   .then(function (imResponse: any) {
+          //     console.log("touserId info", imResponse.data); // 存储用户资料的数组 - [Profile]
+          //     TUICore.instance.TUIServer.TUIConversation.handleCurrentConversation(
+          //       imResponse.data
+          //     );
+          //   })
+          //   .catch(function (imError: any) {
+          //     console.warn("getUserProfile error:", imError); // 获取其他用户资料失败的相关信息
+          //   });
         })
         .catch((error: any) => {
           ElMessage({
